@@ -65,13 +65,17 @@ final class PublisherCollective
 
     public static function getServerName()
     {
+        if (!empty(get_home_url())) {
+            return rtrim(str_replace(['https://', 'http://', 'www.'], '', get_home_url()), '/');
+        }
         if (!empty($_SERVER['SERVER_NAME'])) {
             return $_SERVER['SERVER_NAME'];
         }
         if (!empty($_SERVER['HTTP_HOST'])) {
             return $_SERVER['HTTP_HOST'];
         }
-        return "";
+
+        return null;
     }
 
     public static function get_ads_txt_content_or_cache($renew = false)
@@ -79,10 +83,7 @@ final class PublisherCollective
         $data = get_transient('publisher_collective_ads_txt');
         if (empty($data) || $renew) {
             $serverName = self::getServerName();
-            if (!empty($serverName)) {
-                $data = wp_remote_retrieve_body(wp_remote_get('https://kumo.network-n.com/adstxt/?domain=' .
-                    $serverName));
-            }
+            $data = wp_remote_retrieve_body(wp_remote_get('https://kumo.network-n.com/adstxt/' . (empty($serverName) ? '' : ('?domain=' . $serverName))));
             if ($data !== false) {
                 set_transient('publisher_collective_ads_txt', $data, 86400);
             }
