@@ -3,7 +3,7 @@ Contributors: woeler
 Donate link: https://patreon.com/esohub
 Tags: Publisher Collective Ads Txt
 Requires at least: 4.9
-Tested up to: 5.8
+Tested up to: 5.9
 Requires PHP: 5.6
 Stable tag: trunk
 License: GPLv3 or later
