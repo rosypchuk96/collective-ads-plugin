@@ -27,31 +27,31 @@ final class PublisherCollective
         add_filter('query_vars', [$self, 'display_pc_ads_txt']);
     }
 
-    public function pc_cronstarter_activation()
+    public static function pc_cronstarter_activation()
     {
         if (!wp_next_scheduled('fetch-publisher-collective-ads-txt')) {
             wp_schedule_event(time(), 'daily', 'fetch-publisher-collective-ads-txt');
         }
     }
 
-    public function fetch_ads_txt()
+    public static function fetch_ads_txt()
     {
         self::get_ads_txt_content_or_cache(true);
     }
 
-    public function pc_cronstarter_deactivate()
+    public static function pc_cronstarter_deactivate()
     {
         $timestamp = wp_next_scheduled('fetch-publisher-collective-ads-txt');
         wp_unschedule_event($timestamp, 'fetch-publisher-collective-ads-txt');
     }
 
-    public function pc_cronstarter_activate()
+    public static function pc_cronstarter_activate()
     {
         self::get_ads_txt_content_or_cache(true);
     }
 
 
-    public function display_pc_ads_txt($query_vars)
+    public static function display_pc_ads_txt($query_vars)
     {
         $request = isset($_SERVER['REQUEST_URI']) ? esc_url_raw(wp_unslash($_SERVER['REQUEST_URI'])) : false;
         if ('/ads.txt' === $request) {
