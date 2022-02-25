@@ -14,6 +14,9 @@ License: GPL-3
 defined('ABSPATH') || exit;
 add_action('plugins_loaded', 'PublisherCollective::setup');
 
+/**
+ * Class PublisherCollective
+ */
 final class PublisherCollective
 {
     /**
