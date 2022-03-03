@@ -4,7 +4,8 @@
 Plugin Name: Publisher Collective Ads.Txt
 Plugin URI: https://github.com/PathfinderMediaGroup/publisher-collective-ads-txt-wordpress
 Description: Installs and frequently updates the ads.txt file for Publisher Collective websites
-Version: 1.1.0
+Version: 2.0.0
+Requires PHP: 8.0
 Author: Woeler
 Author URI: https://www.pathfindermediagroup.com
 License: GPL-3
@@ -13,8 +14,16 @@ License: GPL-3
 defined('ABSPATH') || exit;
 add_action('plugins_loaded', 'PublisherCollective::setup');
 
+/**
+ * Class PublisherCollective
+ */
 final class PublisherCollective
 {
+    /**
+     * @var string
+     */
+    const ADS_TXT_URL_PREFIX = 'https://kumo.network-n.com/adstxt/?domain=';
+
     public function __construct()
     {
     }
@@ -63,18 +72,30 @@ final class PublisherCollective
         return $query_vars;
     }
 
-    public static function getServerName()
+    /**
+     * @return string
+     */
+    private static function getServerName(): string
     {
-        if (!empty(get_home_url())) {
-            return rtrim(str_replace(['https://', 'http://', 'www.'], '', get_home_url()), '/');
-        }
-        if (!empty($_SERVER['SERVER_NAME'])) {
-            return $_SERVER['SERVER_NAME'];
-        }
-        if (!empty($_SERVER['HTTP_HOST'])) {
-            return $_SERVER['HTTP_HOST'];
-        }
+        return self::getDomain() ?? (
+                ($_SERVER['SERVER_NAME'] ?? null) ?? ($_SERVER['HTTP_HOST'] ?? ""));
+    }
 
+    /**
+     * @return string|null
+     */
+    private static function getDomain(): ?string
+    {
+        $url = get_option('siteurl') ?? null;
+        if ($url) {
+            $domain = parse_url($url, PHP_URL_HOST);
+            if (empty($domain)) {
+                $urlParts = parse_url($url);
+                $domain = $urlParts['path'] ?? "";
+            }
+            return preg_replace('/^www./', "",
+                $domain);
+        }
         return null;
     }
 
@@ -83,7 +104,10 @@ final class PublisherCollective
         $data = get_transient('publisher_collective_ads_txt');
         if (empty($data) || $renew) {
             $serverName = self::getServerName();
-            $data = wp_remote_retrieve_body(wp_remote_get('https://kumo.network-n.com/adstxt/' . (empty($serverName) ? '' : ('?domain=' . $serverName))));
+            if (!empty($serverName)) {
+                $data = wp_remote_retrieve_body(wp_remote_get(self::ADS_TXT_URL_PREFIX .
+                    $serverName));
+            }
             if ($data !== false) {
                 set_transient('publisher_collective_ads_txt', $data, 86400);
             }
