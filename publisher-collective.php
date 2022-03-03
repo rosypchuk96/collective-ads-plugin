@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 Plugin Name: Publisher Collective Ads.Txt
 Plugin URI: https://github.com/PathfinderMediaGroup/publisher-collective-ads-txt-wordpress
@@ -14,53 +16,42 @@ License: GPL-3
 defined('ABSPATH') || exit;
 add_action('plugins_loaded', 'PublisherCollective::setup');
 
-/**
- * Class PublisherCollective
- */
 final class PublisherCollective
 {
-    /**
-     * @var string
-     */
-    const ADS_TXT_URL_PREFIX = 'https://kumo.network-n.com/adstxt/?domain=';
+    public const ADS_TXT_URL_PREFIX = 'https://kumo.network-n.com/adstxt/?domain=';
 
-    public function __construct()
+    public static function setup(): void
     {
-    }
-
-    public static function setup()
-    {
-        $self = new PublisherCollective();
+        $self = new self();
         add_action('wp', [$self, 'pc_cronstarter_activation']);
         add_action('fetch-publisher-collective-ads-txt', [$self, 'fetch_ads_txt']);
         add_filter('query_vars', [$self, 'display_pc_ads_txt']);
     }
 
-    public static function pc_cronstarter_activation()
+    public static function pc_cronstarter_activation(): void
     {
-        if (!wp_next_scheduled('fetch-publisher-collective-ads-txt')) {
+        if (! wp_next_scheduled('fetch-publisher-collective-ads-txt')) {
             wp_schedule_event(time(), 'daily', 'fetch-publisher-collective-ads-txt');
         }
     }
 
-    public static function fetch_ads_txt()
+    public static function fetch_ads_txt(): void
     {
         self::get_ads_txt_content_or_cache(true);
     }
 
-    public static function pc_cronstarter_deactivate()
+    public static function pc_cronstarter_deactivate(): void
     {
         $timestamp = wp_next_scheduled('fetch-publisher-collective-ads-txt');
         wp_unschedule_event($timestamp, 'fetch-publisher-collective-ads-txt');
     }
 
-    public static function pc_cronstarter_activate()
+    public static function pc_cronstarter_activate(): void
     {
         self::get_ads_txt_content_or_cache(true);
     }
 
-
-    public static function display_pc_ads_txt($query_vars)
+    public static function display_pc_ads_txt(array $query_vars): array
     {
         $request = isset($_SERVER['REQUEST_URI']) ? esc_url_raw(wp_unslash($_SERVER['REQUEST_URI'])) : false;
         if ('/ads.txt' === $request) {
@@ -72,42 +63,31 @@ final class PublisherCollective
         return $query_vars;
     }
 
-    /**
-     * @return string
-     */
-    private static function getServerName(): string
+    private static function getServerName(): ?string
     {
-        return self::getDomain() ?? (
-                ($_SERVER['SERVER_NAME'] ?? null) ?? ($_SERVER['HTTP_HOST'] ?? ""));
+        return self::getDomain()
+            ?? $_SERVER['SERVER_NAME']
+            ?? $_SERVER['HTTP_HOST']
+            ?? null;
     }
 
-    /**
-     * @return string|null
-     */
     private static function getDomain(): ?string
     {
-        $url = get_option('siteurl') ?? null;
-        if ($url) {
-            $domain = parse_url($url, PHP_URL_HOST);
-            if (empty($domain)) {
-                $urlParts = parse_url($url);
-                $domain = $urlParts['path'] ?? "";
-            }
-            return preg_replace('/^www./', "",
-                $domain);
+        if (! empty(get_home_url())) {
+            return rtrim(str_replace(['https://', 'http://', 'www.'], '', get_home_url()), '/');
         }
+
         return null;
     }
 
-    public static function get_ads_txt_content_or_cache($renew = false)
+    public static function get_ads_txt_content_or_cache(bool $renew = false): mixed
     {
         $data = get_transient('publisher_collective_ads_txt');
         if (empty($data) || $renew) {
             $serverName = self::getServerName();
-            if (!empty($serverName)) {
-                $data = wp_remote_retrieve_body(wp_remote_get(self::ADS_TXT_URL_PREFIX .
-                    $serverName));
-            }
+            $data = wp_remote_retrieve_body(wp_remote_get(
+                $serverName ? (self::ADS_TXT_URL_PREFIX.$serverName) : self::ADS_TXT_URL_PREFIX
+            ));
             if ($data !== false) {
                 set_transient('publisher_collective_ads_txt', $data, 86400);
             }

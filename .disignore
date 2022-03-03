@@ -1,0 +1,12 @@
+/.git
+/.github
+/.wordpress-org
+/tests
+
+.disignore
+.gitignore
+.php-cs-fixer.php
+composer.json
+composer.lock
+phpunit.xml
+README.md

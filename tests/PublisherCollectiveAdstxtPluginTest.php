@@ -1,37 +1,25 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
-
-include __DIR__ . '/publisher-collective_mock_functions.php';
-include __DIR__ . '/../publisher-collective.php';
+include __DIR__.'/publisher-collective_mock_functions.php';
+include __DIR__.'/../publisher-collective.php';
 
 /**
- * Class PublisherCollectiveAdstxtPluginTest
+ * Class PublisherCollectiveAdstxtPluginTest.
  * @runTestsInSeparateProcesses
  */
 final class PublisherCollectiveAdstxtPluginTest extends TestCase
 {
-    /**
-     * @var string
-     */
-    const ADS_TXT_URL_PREFIX = 'https://kumo.network-n.com/adstxt/?domain=';
-
-    /**
-     * @var string
-     */
-    const ADS_TXT_SAMPLE_DOMAIN = 'pcgamesn.com';
+    private const ADS_TXT_SAMPLE_DOMAIN = 'pcgamesn.com';
 
     public function testDomainIsCreatedCorrectlyFromGetOption(): void
     {
-        function get_option(): string
-        {
-            return "https://www.pcgamesn.com/gaming-hardware";
-        }
-
         $this->globalMockFunctions();
         $result = PublisherCollective::get_ads_txt_content_or_cache();
-        $this->assertEquals($result, self::ADS_TXT_URL_PREFIX . self::ADS_TXT_SAMPLE_DOMAIN);
+        $this->assertEquals($result, PublisherCollective::ADS_TXT_URL_PREFIX.self::ADS_TXT_SAMPLE_DOMAIN);
     }
 
     public function testDomainIsCreatedWhenUsingSERVER_NAME(): void
@@ -39,7 +27,7 @@ final class PublisherCollectiveAdstxtPluginTest extends TestCase
         $_SERVER['SERVER_NAME'] = self::ADS_TXT_SAMPLE_DOMAIN;
         $this->globalMockFunctions();
         $result = PublisherCollective::get_ads_txt_content_or_cache();
-        $this->assertEquals($result, self::ADS_TXT_URL_PREFIX . self::ADS_TXT_SAMPLE_DOMAIN);
+        $this->assertEquals($result, PublisherCollective::ADS_TXT_URL_PREFIX.self::ADS_TXT_SAMPLE_DOMAIN);
     }
 
     public function testDomainIsCreatedWhenUsingHTTP_HOST(): void
@@ -47,7 +35,7 @@ final class PublisherCollectiveAdstxtPluginTest extends TestCase
         $_SERVER['HTTP_HOST'] = self::ADS_TXT_SAMPLE_DOMAIN;
         $this->globalMockFunctions();
         $result = PublisherCollective::get_ads_txt_content_or_cache();
-        $this->assertEquals($result, self::ADS_TXT_URL_PREFIX . self::ADS_TXT_SAMPLE_DOMAIN);
+        $this->assertEquals($result, PublisherCollective::ADS_TXT_URL_PREFIX.self::ADS_TXT_SAMPLE_DOMAIN);
     }
 
     private function globalMockFunctions()
@@ -68,13 +56,17 @@ final class PublisherCollectiveAdstxtPluginTest extends TestCase
 
         function get_transient()
         {
-            return null;
         }
 
-        if (!function_exists('get_option')) {
+        function get_home_url(): string
+        {
+            return 'https://www.pcgamesn.com/';
+        }
+
+        if (! function_exists('get_option')) {
             function get_option(): string
             {
-                return "";
+                return '';
             }
         }
     }

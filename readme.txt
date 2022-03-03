@@ -2,9 +2,9 @@
 Contributors: woeler
 Donate link: https://patreon.com/esohub
 Tags: Publisher Collective Ads Txt
-Requires at least: 4.9
+Requires at least: 5.7
 Tested up to: 5.9
-Requires PHP: 5.6
+Requires PHP: 8.0
 Stable tag: trunk
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
