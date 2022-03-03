@@ -4,7 +4,7 @@
 Plugin Name: Publisher Collective Ads.Txt
 Plugin URI: https://github.com/PathfinderMediaGroup/publisher-collective-ads-txt-wordpress
 Description: Installs and frequently updates the ads.txt file for Publisher Collective websites
-Version: 1.0.0
+Version: 2.0.0
 Requires PHP: 8.0
 Author: Woeler
 Author URI: https://www.pathfindermediagroup.com
