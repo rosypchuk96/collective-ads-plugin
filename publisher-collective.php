@@ -13,7 +13,11 @@ Author URI: https://www.pathfindermediagroup.com
 License: GPL-3
 */
 
+define('PUB_COL_PLUGIN_DIR', plugin_dir_path(__FILE__));
 defined('ABSPATH') || exit;
+
+require_once PUB_COL_PLUGIN_DIR . 'assets/php/settings/PublisherCollectiveSettings.php';
+
 add_action('plugins_loaded', 'PublisherCollective::setup');
 
 final class PublisherCollective
@@ -23,6 +27,7 @@ final class PublisherCollective
     public static function setup(): void
     {
         $self = new self();
+        (new PublisherCollectiveSettings())->init();
         add_action('wp', [$self, 'pc_cronstarter_activation']);
         add_action('fetch-publisher-collective-ads-txt', [$self, 'fetch_ads_txt']);
         add_filter('query_vars', [$self, 'display_pc_ads_txt']);
@@ -30,7 +35,7 @@ final class PublisherCollective
 
     public static function pc_cronstarter_activation(): void
     {
-        if (! wp_next_scheduled('fetch-publisher-collective-ads-txt')) {
+        if (!wp_next_scheduled('fetch-publisher-collective-ads-txt')) {
             wp_schedule_event(time(), 'daily', 'fetch-publisher-collective-ads-txt');
         }
     }
@@ -73,7 +78,7 @@ final class PublisherCollective
 
     private static function getDomain(): ?string
     {
-        if (! empty(get_home_url())) {
+        if (!empty(get_home_url())) {
             return rtrim(str_replace(['https://', 'http://', 'www.'], '', get_home_url()), '/');
         }
 
@@ -86,13 +91,16 @@ final class PublisherCollective
         if (empty($data) || $renew) {
             $serverName = self::getServerName();
             $data = wp_remote_retrieve_body(wp_remote_get(
-                $serverName ? (self::ADS_TXT_URL_PREFIX.$serverName) : self::ADS_TXT_URL_PREFIX
+                $serverName ? (self::ADS_TXT_URL_PREFIX . $serverName) : self::ADS_TXT_URL_PREFIX
             ));
             if ($data !== false) {
                 set_transient('publisher_collective_ads_txt', $data, 86400);
             }
         }
-
+        if (!empty($data)) {
+            $adsTxtExtraParams = get_option('pc-ads-txt-extra-params', null);
+            $data .= PHP_EOL.$adsTxtExtraParams;
+        }
         return $data;
     }
 }

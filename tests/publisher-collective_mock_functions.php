@@ -20,6 +20,18 @@ if (! function_exists('add_action')) {
     }
 }
 
+if (! function_exists('plugin_dir_path')) {
+    function plugin_dir_path()
+    {
+    }
+}
+
+if (! function_exists('update_option')) {
+    function update_option()
+    {
+    }
+}
+
 if (! defined('ABSPATH')) {
     define('ABSPATH', __DIR__.'/');
 }
