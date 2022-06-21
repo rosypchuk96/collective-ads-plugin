@@ -1,7 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 /**
- * Class PublisherCollectiveSettings
+ * Class PublisherCollectiveSettings.
  */
 class PublisherCollectiveSettings
 {
@@ -22,7 +24,7 @@ class PublisherCollectiveSettings
         'ERRORED' => 'error',
         'SUCCESS' => 'success',
         'WARNING' => 'warning',
-        'INFO' => 'info'
+        'INFO' => 'info',
     ];
 
     /**
@@ -32,7 +34,7 @@ class PublisherCollectiveSettings
         'ERRORED' => 'Additional line items should not be blank',
         'SUCCESS' => 'Successfully undated',
         'WARNING' => 'warning',
-        'INFO' => 'info'
+        'INFO' => 'info',
     ];
 
     /**
@@ -40,21 +42,27 @@ class PublisherCollectiveSettings
      */
     private $resultMessage = [
         'status' => null,
-        'message' => ''
+        'message' => '',
     ];
 
     public function init()
     {
-        add_action('admin_menu', array($this, 'initiateAdminMenu'));
-        add_action('admin_init', array($this, 'initiateAdminFields'));
+        add_action('admin_menu', [$this, 'initiateAdminMenu']);
+        add_action('admin_init', [$this, 'initiateAdminFields']);
         $this->handleSubmission();
     }
 
     public function initiateAdminMenu()
     {
-        add_menu_page(self::PAGE_NAME,
-            'Ads txt', 'administrator',
-            self::PAGE_NAME, array($this, 'renderAdsTxtSettingsPageMenu'), 'dashicons-admin-settings', 6);
+        add_menu_page(
+            self::PAGE_NAME,
+            'Ads txt',
+            'administrator',
+            self::PAGE_NAME,
+            [$this, 'renderAdsTxtSettingsPageMenu'],
+            'dashicons-admin-settings',
+            6
+        );
     }
 
     public function initiateAdminFields()
@@ -71,18 +79,16 @@ class PublisherCollectiveSettings
             'pub_col_settings_error_field_key'
         );
 
-
         add_settings_section(
             // ID used to identify this section and with which to register options
             'pub_col_settings_error_section',
             // Title to be displayed on the administration page
             '',
             // Callback used to render the description of the section
-            array($this, 'renderErrorMessages'),
+            [$this, 'renderErrorMessages'],
             // Page on which to add this section of options
             self::PAGE_NAME
         );
-
 
         add_settings_section(
         // ID used to identify this section and with which to register options
@@ -90,7 +96,7 @@ class PublisherCollectiveSettings
             // Title to be displayed on the administration page
             self::PAGE_TITLE,
             // Callback used to render the description of the section
-            array($this, 'featuresSectionDescription'),
+            [$this, 'featuresSectionDescription'],
             // Page on which to add this section of options
             self::PAGE_NAME
         );
@@ -98,7 +104,7 @@ class PublisherCollectiveSettings
         add_settings_field(
             'additional_line_items_field',
             'Additional line items',
-            array($this, 'addThemeBodyFunction'),
+            [$this, 'addThemeBodyFunction'],
             self::PAGE_NAME,
             'additional_line_items_section'
         );
@@ -122,14 +128,14 @@ class PublisherCollectiveSettings
 
     public function renderErrorMessages()
     {
-        if (!empty($this->resultMessage['status'])) {
-            include(PUB_COL_PLUGIN_DIR . 'assets/templates/additional-line-items-error-messages.php');
+        if (! empty($this->resultMessage['status'])) {
+            include PUB_COL_PLUGIN_DIR.'assets/templates/additional-line-items-error-messages.php';
         }
     }
 
     public function addThemeBodyFunction()
     {
-        include(PUB_COL_PLUGIN_DIR . 'assets/templates/additional-line-items-form.php');
+        include PUB_COL_PLUGIN_DIR.'assets/templates/additional-line-items-form.php';
     }
 
     public function handleSubmission()

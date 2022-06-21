@@ -8,7 +8,7 @@ include __DIR__.'/../../../publisher-collective_mock_functions.php';
 include __DIR__.'/../../../../assets/php/settings/PublisherCollectiveSettings.php';
 
 /**
- * Class PublisherCollectiveSettingsTest
+ * Class PublisherCollectiveSettingsTest.
  * @runTestsInSeparateProcesses
  */
 final class PublisherCollectiveSettingsTest extends TestCase
@@ -18,6 +18,7 @@ final class PublisherCollectiveSettingsTest extends TestCase
         $reflectedClass = new \ReflectionClass($object);
         $reflection = $reflectedClass->getProperty($property);
         $reflection->setAccessible(true);
+
         return $reflection->getValue($object);
     }
 
