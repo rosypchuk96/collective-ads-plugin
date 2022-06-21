@@ -7,52 +7,37 @@ declare(strict_types=1);
  */
 class PublisherCollectiveSettings
 {
-    /**
-     * @var string
-     */
-    const PAGE_NAME = 'publisher-collective-adstxt-settings';
+    public const PAGE_NAME = 'publisher-collective-adstxt-settings';
 
-    /**
-     * @var string
-     */
-    const PAGE_TITLE = 'Publisher Collective ads.txt settings';
+    public const PAGE_TITLE = 'Publisher Collective ads.txt settings';
 
-    /**
-     * @var array
-     */
-    const RESULT_STATUS = [
+    public const RESULT_STATUS = [
         'ERRORED' => 'error',
         'SUCCESS' => 'success',
         'WARNING' => 'warning',
         'INFO' => 'info',
     ];
 
-    /**
-     * @var array
-     */
-    const RESULT_MESSAGES = [
+    public const RESULT_MESSAGES = [
         'ERRORED' => 'Additional line items should not be blank',
         'SUCCESS' => 'Successfully undated',
         'WARNING' => 'warning',
         'INFO' => 'info',
     ];
 
-    /**
-     * @var array
-     */
-    private $resultMessage = [
+    private array $resultMessage = [
         'status' => null,
         'message' => '',
     ];
 
-    public function init()
+    public function init(): void
     {
         add_action('admin_menu', [$this, 'initiateAdminMenu']);
         add_action('admin_init', [$this, 'initiateAdminFields']);
         $this->handleSubmission();
     }
 
-    public function initiateAdminMenu()
+    public function initiateAdminMenu(): void
     {
         add_menu_page(
             self::PAGE_NAME,
@@ -65,7 +50,7 @@ class PublisherCollectiveSettings
         );
     }
 
-    public function initiateAdminFields()
+    public function initiateAdminFields(): void
     {
         add_settings_error(
             'pub_col_settings_error_field_key',
@@ -115,30 +100,30 @@ class PublisherCollectiveSettings
         );
     }
 
-    public function renderAdsTxtSettingsPageMenu()
+    public function renderAdsTxtSettingsPageMenu(): void
     {
         settings_fields(self::PAGE_NAME);
         do_settings_sections(self::PAGE_NAME);
     }
 
-    public function featuresSectionDescription()
+    public function featuresSectionDescription(): void
     {
         echo 'Edit settings on your ads txt plugin';
     }
 
-    public function renderErrorMessages()
+    public function renderErrorMessages(): void
     {
         if (! empty($this->resultMessage['status'])) {
             include PUB_COL_PLUGIN_DIR.'assets/templates/additional-line-items-error-messages.php';
         }
     }
 
-    public function addThemeBodyFunction()
+    public function addThemeBodyFunction(): void
     {
         include PUB_COL_PLUGIN_DIR.'assets/templates/additional-line-items-form.php';
     }
 
-    public function handleSubmission()
+    public function handleSubmission(): void
     {
         if (isset($_POST['pc-ads-txt-extra-params'])) {
             $adsTxtExtraParams = $_POST['pc-ads-txt-extra-params'];
