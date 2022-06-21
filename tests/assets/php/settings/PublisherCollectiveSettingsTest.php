@@ -5,7 +5,6 @@ declare(strict_types=1);
 use PHPUnit\Framework\TestCase;
 
 include __DIR__.'/../../../publisher-collective_mock_functions.php';
-include __DIR__.'/../../../../assets/php/settings/PublisherCollectiveSettings.php';
 
 /**
  * Class PublisherCollectiveSettingsTest.

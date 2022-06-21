@@ -85,7 +85,7 @@ final class PublisherCollective
         return null;
     }
 
-    public static function get_ads_txt_content_or_cache(bool $renew = false): mixed
+    public static function get_ads_txt_content_or_cache(bool $renew = false): string
     {
         $data = get_transient('publisher_collective_ads_txt');
         if (empty($data) || $renew) {
@@ -100,9 +100,11 @@ final class PublisherCollective
         if (! empty($data)) {
             $adsTxtExtraParams = get_option('pc-ads-txt-extra-params', null);
             $data .= PHP_EOL.$adsTxtExtraParams;
+        } else {
+            return '';
         }
 
-        return $data;
+        return trim($data);
     }
 }
 
